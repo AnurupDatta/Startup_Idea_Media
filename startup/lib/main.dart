@@ -67,29 +67,138 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Startup Idea App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6366F1),
+          brightness: Brightness.light,
+        ),
+        appBarTheme: const AppBarTheme(
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        cardTheme: CardTheme(
+          elevation: 8,
+          shadowColor: const Color(0xFF6366F1).withOpacity(0.15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 4,
+            shadowColor: const Color(0xFF6366F1).withOpacity(0.3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.grey.shade50,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        ),
+        textTheme: const TextTheme(
+          headlineLarge: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1F2937),
+          ),
+          headlineMedium: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF374151),
+          ),
+          titleLarge: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF4B5563),
+          ),
+          bodyLarge: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF6B7280),
+          ),
+        ),
       ),
       home: Scaffold(
-        body: _pages[_selectedIndex],
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.lightbulb),
-              label: 'Ideas',
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFF8FAFC),
+                Color(0xFFF1F5F9),
+                Color(0xFFE2E8F0),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.leaderboard),
-              label: 'Leaderboard',
+          ),
+          child: _pages[_selectedIndex],
+        ),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            selectedItemColor: const Color(0xFF6366F1),
+            unselectedItemColor: Colors.grey.shade600,
+            selectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
             ),
-          ],
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
+            type: BottomNavigationBarType.fixed,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.lightbulb_outline),
+                activeIcon: Icon(Icons.lightbulb),
+                label: 'Ideas',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.leaderboard_outlined),
+                activeIcon: Icon(Icons.leaderboard),
+                label: 'Leaderboard',
+              ),
+            ],
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+          ),
         ),
       ),
     );

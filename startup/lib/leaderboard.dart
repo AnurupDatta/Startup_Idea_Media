@@ -28,219 +28,339 @@ class Leaderboard extends StatelessWidget {
                 ideas.length;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('Leaderboard'),
-        backgroundColor: Colors.deepPurple,
-        elevation: 4,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
+            ),
+          ),
+        ),
+        elevation: 0,
       ),
       body: Column(
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.shade50,
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
               ),
+              borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.deepPurple.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
+                  color: const Color(0xFF6366F1).withOpacity(0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.leaderboard,
-                      color: Colors.deepPurple,
-                      size: 28,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Ideas: ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.deepPurple.shade700,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '$totalIdeas',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.deepPurple,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                _buildStatItem(
+                  icon: Icons.lightbulb,
+                  label: 'Ideas',
+                  value: '$totalIdeas',
                 ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.thumb_up,
-                      color: Colors.deepPurple,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Votes: ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.deepPurple.shade700,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '$totalVotes',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.deepPurple,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                _buildStatItem(
+                  icon: Icons.thumb_up,
+                  label: 'Votes',
+                  value: '$totalVotes',
                 ),
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.amber, size: 24),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Avg: ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.deepPurple.shade700,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      avgRating.isNaN ? '0.0' : avgRating.toStringAsFixed(1),
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.deepPurple,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                _buildStatItem(
+                  icon: Icons.star,
+                  label: 'Avg Rating',
+                  value: avgRating.isNaN ? '0.0' : avgRating.toStringAsFixed(1),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 8),
           Expanded(
             child:
                 sortedIdeas.isEmpty
                     ? Center(
-                      child: Text(
-                        'No ideas yet. Submit one to see the leaderboard!',
-                        style: TextStyle(
-                          color: Colors.deepPurple.shade300,
-                          fontSize: 18,
-                          fontStyle: FontStyle.italic,
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.leaderboard_outlined,
+                              size: 64,
+                              color: const Color(0xFF6366F1).withOpacity(0.6),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            'No ideas yet',
+                            style: TextStyle(
+                              color: const Color(0xFF6366F1),
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Submit one to see the leaderboard!',
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 16,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                     : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: sortedIdeas.length,
                       itemBuilder: (context, index) {
                         final idea = sortedIdeas[index];
                         final origIndex = ideas.indexOf(idea);
-                        return Card(
-                          elevation: 6,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 20,
-                            ),
-                            title: Text(
-                              idea.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.deepPurple,
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
                               ),
-                            ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(top: 6.0),
-                              child: Text(
-                                idea.tagline,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => IdeaInformation(idea: idea),
-                                ),
-                              );
-                            },
-                            trailing: Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: 8,
-                              runSpacing: 4,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            IdeaInformation(idea: idea),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.thumb_up,
-                                        color: Colors.deepPurple,
-                                      ),
-                                      onPressed: () => onUpvote(origIndex),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            gradient:
+                                                index < 3
+                                                    ? const LinearGradient(
+                                                      colors: [
+                                                        Color(0xFFF59E0B),
+                                                        Color(0xFFFBBF24),
+                                                      ],
+                                                    )
+                                                    : LinearGradient(
+                                                      colors: [
+                                                        Colors.grey.shade400,
+                                                        Colors.grey.shade500,
+                                                      ],
+                                                    ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '${index + 1}',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: index < 3 ? 18 : 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Text(
+                                            idea.title,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 20,
+                                              color: Color(0xFF1F2937),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              colors: [
+                                                Color(0xFFF59E0B),
+                                                Color(0xFFFBBF24),
+                                              ],
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.star,
+                                                color: Colors.white,
+                                                size: 16,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                idea.aiRating.toStringAsFixed(
+                                                  1,
+                                                ),
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                    const SizedBox(height: 8),
                                     Text(
-                                      '${idea.upvotes}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                      idea.tagline,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey.shade700,
+                                        fontStyle: FontStyle.italic,
                                       ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 8,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: const Color(
+                                                  0xFF6366F1,
+                                                ).withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.thumb_up,
+                                                    color: Color(0xFF6366F1),
+                                                    size: 18,
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  Text(
+                                                    '${idea.upvotes}',
+                                                    style: const TextStyle(
+                                                      color: Color(0xFF6366F1),
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            IconButton(
+                                              onPressed: () {
+                                                onUpvote(origIndex);
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text('Upvoted!'),
+                                                    duration: Duration(
+                                                      milliseconds: 900,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              icon: Container(
+                                                padding: const EdgeInsets.all(
+                                                  8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xFF6366F1,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: const Icon(
+                                                  Icons.thumb_up,
+                                                  color: Colors.white,
+                                                  size: 18,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        IconButton(
+                                          onPressed:
+                                              () => _shareIdea(context, idea),
+                                          icon: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: Colors.green.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Icon(
+                                              Icons.share,
+                                              color: Colors.green.shade700,
+                                              size: 18,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.star,
-                                      color: Colors.amber,
-                                      size: 20,
-                                    ),
-                                    Text(
-                                      ' ${idea.aiRating.toStringAsFixed(1)}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.share,
-                                        color: Colors.green,
-                                      ),
-                                      onPressed:
-                                          () => _shareIdea(context, idea),
-                                      tooltip: 'Share idea',
-                                    ),
-                                  ],
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         );
@@ -249,6 +369,42 @@ class Leaderboard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatItem({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Icon(icon, color: Colors.white, size: 24),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 24,
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white.withOpacity(0.9),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }
