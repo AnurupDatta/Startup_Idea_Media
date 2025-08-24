@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'idea_model.dart';
+import '../model/idea_model.dart';
 import 'dart:math';
 
 class SubmissionPage extends StatefulWidget {
-  const SubmissionPage({super.key});
+  final bool isDarkMode;
+  
+  const SubmissionPage({super.key, required this.isDarkMode});
 
   @override
   State<SubmissionPage> createState() => _SubmissionPageState();
@@ -17,13 +19,25 @@ class _SubmissionPageState extends State<SubmissionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
     return Scaffold(
       backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: const Text('Submit Idea', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
+            ),
+          ),
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: isDarkMode
+          gradient: widget.isDarkMode
               ? const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -43,7 +57,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
             padding: const EdgeInsets.all(24),
             child: Container(
               decoration: BoxDecoration(
-                color: isDarkMode 
+                color: widget.isDarkMode 
                     ? const Color(0xFF1E293B)
                     : Colors.white,
                 borderRadius: BorderRadius.circular(28),
@@ -82,7 +96,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
-                          color: isDarkMode
+                          color: widget.isDarkMode
                               ? const Color(0xFFF8FAFC)
                               : const Color(0xFF1F2937),
                         ),
@@ -93,7 +107,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
                         'Inspire others with your innovative concept',
                         style: TextStyle(
                           fontSize: 16,
-                          color: isDarkMode
+                          color: widget.isDarkMode
                               ? Colors.grey.shade300
                               : Colors.grey.shade600,
                           fontWeight: FontWeight.w500,

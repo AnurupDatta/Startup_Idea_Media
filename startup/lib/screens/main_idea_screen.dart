@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'idea_model.dart';
+import '../model/idea_model.dart';
+import 'submission_page.dart';
 import 'idea_information.dart';
 
-class Leaderboard extends StatelessWidget {
+class MainIdeaScreen extends StatelessWidget {
   final List<Idea> ideas;
   final void Function(int) onUpvote;
+  final void Function(Idea) onAddIdea;
+  final bool isDarkMode;
 
-  const Leaderboard({super.key, required this.ideas, required this.onUpvote});
+  const MainIdeaScreen({
+    super.key,
+    required this.ideas,
+    required this.onUpvote,
+    required this.onAddIdea,
+    required this.isDarkMode,
+  });
 
   void _shareIdea(BuildContext context, Idea idea) {
     final text =
@@ -17,17 +26,6 @@ class Leaderboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final sortedIdeas = [...ideas]
-      ..sort((a, b) => b.upvotes.compareTo(a.upvotes));
-    final int totalVotes = ideas.fold(0, (sum, i) => sum + i.upvotes);
-    final int totalIdeas = ideas.length;
-    final double avgRating =
-        ideas.isEmpty
-            ? 0
-            : ideas.map((i) => i.aiRating).reduce((a, b) => a + b) /
-                ideas.length;
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Column(
@@ -52,29 +50,49 @@ class Leaderboard extends StatelessWidget {
               ],
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildStatItem(
-                  icon: Icons.lightbulb,
-                  label: 'Ideas',
-                  value: '$totalIdeas',
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.lightbulb,
+                    color: Colors.white,
+                    size: 32,
+                  ),
                 ),
-                _buildStatItem(
-                  icon: Icons.thumb_up,
-                  label: 'Votes',
-                  value: '$totalVotes',
-                ),
-                _buildStatItem(
-                  icon: Icons.star,
-                  label: 'Avg Rating',
-                  value: avgRating.isNaN ? '0.0' : avgRating.toStringAsFixed(1),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total Ideas',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        '${ideas.length}',
+                        style: const TextStyle(
+                          fontSize: 32,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
           Expanded(
             child:
-                sortedIdeas.isEmpty
+                ideas.isEmpty
                     ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -95,7 +113,7 @@ class Leaderboard extends StatelessWidget {
                               ],
                             ),
                             child: Icon(
-                              Icons.leaderboard_outlined,
+                              Icons.lightbulb_outline,
                               size: 64,
                               color: const Color(0xFF6366F1).withOpacity(0.6),
                             ),
@@ -111,9 +129,9 @@ class Leaderboard extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Submit one to see the leaderboard!',
+                            'Tap + to add your first startup idea!',
                             style: TextStyle(
-                              color: isDarkMode
+                              color: isDarkMode 
                                   ? Colors.grey.shade300
                                   : Colors.grey.shade600,
                               fontSize: 16,
@@ -125,10 +143,9 @@ class Leaderboard extends StatelessWidget {
                     )
                     : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: sortedIdeas.length,
+                      itemCount: ideas.length,
                       itemBuilder: (context, index) {
-                        final idea = sortedIdeas[index];
-                        final origIndex = ideas.indexOf(idea);
+                        final idea = ideas[index];
                         return Container(
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
@@ -154,7 +171,7 @@ class Leaderboard extends StatelessWidget {
                                   MaterialPageRoute(
                                     builder:
                                         (context) =>
-                                            IdeaInformation(idea: idea),
+                                            IdeaInformation(idea: idea, isDarkMode: isDarkMode),
                                   ),
                                 );
                               },
@@ -165,40 +182,6 @@ class Leaderboard extends StatelessWidget {
                                   children: [
                                     Row(
                                       children: [
-                                        Container(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            gradient:
-                                                index < 3
-                                                    ? const LinearGradient(
-                                                      colors: [
-                                                        Color(0xFFF59E0B),
-                                                        Color(0xFFFBBF24),
-                                                      ],
-                                                    )
-                                                    : LinearGradient(
-                                                        colors: [
-                                                          Colors.grey.shade400,
-                                                          Colors.grey.shade500,
-                                                        ],
-                                                      ),
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              '${index + 1}',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: index < 3 ? 18 : 16,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 16),
                                         Expanded(
                                           child: Text(
                                             idea.title,
@@ -209,8 +192,10 @@ class Leaderboard extends StatelessWidget {
                                                   ? const Color(0xFFF8FAFC)
                                                   : const Color(0xFF1F2937),
                                             ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
+                                        const SizedBox(width: 8),
                                         Container(
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 12,
@@ -261,98 +246,115 @@ class Leaderboard extends StatelessWidget {
                                             : Colors.grey.shade700,
                                         fontStyle: FontStyle.italic,
                                       ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 16),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 8,
+                                        // Wrap the left row with Flexible to avoid overflow
+                                        Flexible(
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xFF6366F1,
+                                                  ).withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.thumb_up,
+                                                      color: Color(0xFF6366F1),
+                                                      size: 18,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    Text(
+                                                      '${idea.upvotes}',
+                                                      style: const TextStyle(
+                                                        color: Color(
+                                                          0xFF6366F1,
+                                                        ),
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        fontSize: 14,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                              decoration: BoxDecoration(
-                                                color: const Color(
-                                                  0xFF6366F1,
-                                                ).withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
+                                              const SizedBox(width: 12),
+                                              IconButton(
+                                                onPressed: () {
+                                                  onUpvote(index);
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text('Upvoted!'),
+                                                      duration: Duration(
+                                                        milliseconds: 900,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                icon: Container(
+                                                  padding: const EdgeInsets.all(
+                                                    8,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(
+                                                      0xFF6366F1,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                  child: const Icon(
                                                     Icons.thumb_up,
-                                                    color: Color(0xFF6366F1),
+                                                    color: Colors.white,
                                                     size: 18,
                                                   ),
-                                                  const SizedBox(width: 6),
-                                                  Text(
-                                                    '${idea.upvotes}',
-                                                    style: const TextStyle(
-                                                      color: Color(
-                                                        0xFF6366F1,
-                                                      ),
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ],
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            IconButton(
-                                              onPressed: () {
-                                                onUpvote(origIndex);
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  const SnackBar(
-                                                    content: Text('Upvoted!'),
-                                                    duration: Duration(
-                                                      milliseconds: 900,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
+                                            ],
+                                          ),
+                                        ),
+                                        // Wrap the share button with Flexible to avoid overflow
+                                        Flexible(
+                                          child: Align(
+                                            alignment: Alignment.centerRight,
+                                            child: IconButton(
+                                              onPressed:
+                                                  () =>
+                                                      _shareIdea(context, idea),
                                               icon: Container(
                                                 padding: const EdgeInsets.all(
                                                   8,
                                                 ),
                                                 decoration: BoxDecoration(
-                                                  color: const Color(
-                                                    0xFF6366F1,
-                                                  ),
+                                                  color: Colors.green.shade100,
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                child: const Icon(
-                                                  Icons.thumb_up,
-                                                  color: Colors.white,
+                                                child: Icon(
+                                                  Icons.share,
+                                                  color: Colors.green.shade700,
                                                   size: 18,
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        IconButton(
-                                          onPressed:
-                                              () => _shareIdea(context, idea),
-                                          icon: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              color: Colors.green.shade100,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Icon(
-                                              Icons.share,
-                                              color: Colors.green.shade700,
-                                              size: 18,
                                             ),
                                           ),
                                         ),
@@ -369,42 +371,41 @@ class Leaderboard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStatItem({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(icon, color: Colors.white, size: 24),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6366F1).withOpacity(0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 24,
-            color: Colors.white,
-            fontWeight: FontWeight.w800,
+        child: FloatingActionButton.extended(
+          backgroundColor: const Color(0xFF6366F1),
+          onPressed: () async {
+            final newIdea = await Navigator.push<Idea>(
+              context,
+              MaterialPageRoute(builder: (context) => SubmissionPage(isDarkMode: isDarkMode)),
+            );
+            if (newIdea != null) {
+              onAddIdea(newIdea);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Idea submitted!'),
+                  duration: Duration(milliseconds: 1200),
+                ),
+              );
+            }
+          },
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: const Text(
+            'Add Idea',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.white.withOpacity(0.9),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

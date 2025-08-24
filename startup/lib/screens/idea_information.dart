@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
-import 'idea_model.dart';
+import '../model/idea_model.dart';
 
 class IdeaInformation extends StatelessWidget {
   final Idea idea;
+  final bool isDarkMode;
 
-  const IdeaInformation({super.key, required this.idea});
+  const IdeaInformation({super.key, required this.idea, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
     return Scaffold(
       backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: const Text('Idea Details'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
+            ),
+          ),
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: isDarkMode
