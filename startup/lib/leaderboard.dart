@@ -17,6 +17,7 @@ class Leaderboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final sortedIdeas = [...ideas]
       ..sort((a, b) => b.upvotes.compareTo(a.upvotes));
     final int totalVotes = ideas.fold(0, (sum, i) => sum + i.upvotes);
@@ -29,19 +30,6 @@ class Leaderboard extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: const Text('Leaderboard'),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
-            ),
-          ),
-        ),
-        elevation: 0,
-      ),
       body: Column(
         children: [
           Container(
@@ -94,7 +82,9 @@ class Leaderboard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.8),
+                              color: isDarkMode 
+                                  ? Colors.white.withOpacity(0.1)
+                                  : Colors.white.withOpacity(0.8),
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
@@ -123,7 +113,9 @@ class Leaderboard extends StatelessWidget {
                           Text(
                             'Submit one to see the leaderboard!',
                             style: TextStyle(
-                              color: Colors.grey.shade600,
+                              color: isDarkMode
+                                  ? Colors.grey.shade300
+                                  : Colors.grey.shade600,
                               fontSize: 16,
                               fontStyle: FontStyle.italic,
                             ),
@@ -140,7 +132,9 @@ class Leaderboard extends StatelessWidget {
                         return Container(
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: isDarkMode 
+                                ? const Color(0xFF1E293B)
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
@@ -184,11 +178,11 @@ class Leaderboard extends StatelessWidget {
                                                       ],
                                                     )
                                                     : LinearGradient(
-                                                      colors: [
-                                                        Colors.grey.shade400,
-                                                        Colors.grey.shade500,
-                                                      ],
-                                                    ),
+                                                        colors: [
+                                                          Colors.grey.shade400,
+                                                          Colors.grey.shade500,
+                                                        ],
+                                                      ),
                                             borderRadius: BorderRadius.circular(
                                               12,
                                             ),
@@ -208,10 +202,12 @@ class Leaderboard extends StatelessWidget {
                                         Expanded(
                                           child: Text(
                                             idea.title,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 20,
-                                              color: Color(0xFF1F2937),
+                                              color: isDarkMode
+                                                  ? const Color(0xFFF8FAFC)
+                                                  : const Color(0xFF1F2937),
                                             ),
                                           ),
                                         ),
@@ -260,7 +256,9 @@ class Leaderboard extends StatelessWidget {
                                       idea.tagline,
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.grey.shade700,
+                                        color: isDarkMode
+                                            ? Colors.grey.shade300
+                                            : Colors.grey.shade700,
                                         fontStyle: FontStyle.italic,
                                       ),
                                     ),
@@ -274,9 +272,9 @@ class Leaderboard extends StatelessWidget {
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                    horizontal: 12,
-                                                    vertical: 8,
-                                                  ),
+                                                horizontal: 12,
+                                                vertical: 8,
+                                              ),
                                               decoration: BoxDecoration(
                                                 color: const Color(
                                                   0xFF6366F1,
@@ -295,7 +293,9 @@ class Leaderboard extends StatelessWidget {
                                                   Text(
                                                     '${idea.upvotes}',
                                                     style: const TextStyle(
-                                                      color: Color(0xFF6366F1),
+                                                      color: Color(
+                                                        0xFF6366F1,
+                                                      ),
                                                       fontWeight:
                                                           FontWeight.w700,
                                                       fontSize: 14,

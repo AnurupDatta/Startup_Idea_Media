@@ -8,35 +8,35 @@ class IdeaInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: const Text('Idea Details'),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
-            ),
-          ),
-        ),
-        elevation: 0,
-      ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
-          ),
+        decoration: BoxDecoration(
+          gradient: isDarkMode
+              ? const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF0F172A),
+                    Color(0xFF1E293B),
+                  ],
+                )
+              : const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+                ),
         ),
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDarkMode 
+                    ? const Color(0xFF1E293B)
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
@@ -58,7 +58,10 @@ class IdeaInformation extends StatelessWidget {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                              colors: [
+                                Color(0xFF6366F1),
+                                Color(0xFF8B5CF6),
+                              ],
                             ),
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -75,10 +78,12 @@ class IdeaInformation extends StatelessWidget {
                             children: [
                               Text(
                                 idea.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.w800,
-                                  color: Color(0xFF1F2937),
+                                  color: isDarkMode
+                                      ? const Color(0xFFF8FAFC)
+                                      : const Color(0xFF1F2937),
                                 ),
                                 softWrap: true,
                                 overflow: TextOverflow.ellipsis,
@@ -107,10 +112,14 @@ class IdeaInformation extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAFC),
+                        color: isDarkMode
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFFE2E8F0),
+                          color: isDarkMode
+                              ? const Color(0xFF475569)
+                              : const Color(0xFFE2E8F0),
                           width: 1,
                         ),
                       ),
@@ -139,7 +148,9 @@ class IdeaInformation extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF374151),
+                                  color: isDarkMode
+                                      ? const Color(0xFFE2E8F0)
+                                      : const Color(0xFF374151),
                                 ),
                               ),
                             ],
@@ -149,7 +160,9 @@ class IdeaInformation extends StatelessWidget {
                             idea.description,
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.grey.shade700,
+                              color: isDarkMode
+                                  ? Colors.grey.shade300
+                                  : Colors.grey.shade700,
                               height: 1.6,
                               fontWeight: FontWeight.w500,
                             ),
