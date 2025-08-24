@@ -12,8 +12,9 @@ A Flutter application for sharing, upvoting, and exploring innovative startup id
 - 📤 Share ideas with others
 
 ## Screenshots
+<img width="1600" height="900" alt="app image" src="https://github.com/user-attachments/assets/59297d72-a727-4c53-aa5f-21b8bb0a64c4" />
 
-_Add screenshots here if available_
+
 
 ## Getting Started
 
