@@ -1,8 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:startup/firebase_options.dart';
 import 'main_page/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'authentication/login.dart';
+import 'authentication/sign_up.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -47,9 +54,22 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Startup Idea App',
       theme: _isDarkMode ? _buildDarkTheme() : _buildLightTheme(),
-      home: HomeScreen(
-        isDarkMode: _isDarkMode,
-        onThemeToggle: _toggleTheme,
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasData) {
+            return HomeScreen(
+              isDarkMode: _isDarkMode,
+              onThemeToggle: _toggleTheme,
+              userEmail: snapshot.data?.email ?? '',
+            );
+          } else {
+            return const LoginPage();
+          }
+        },
       ),
     );
   }
@@ -73,9 +93,7 @@ class _MyAppState extends State<MyApp> {
       cardTheme: CardTheme(
         elevation: 8,
         shadowColor: const Color(0xFF6366F1).withOpacity(0.15),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -101,7 +119,10 @@ class _MyAppState extends State<MyApp> {
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
       ),
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
@@ -147,9 +168,7 @@ class _MyAppState extends State<MyApp> {
       cardTheme: CardTheme(
         elevation: 8,
         shadowColor: const Color(0xFF6366F1).withOpacity(0.15),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -175,7 +194,10 @@ class _MyAppState extends State<MyApp> {
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
       ),
       textTheme: const TextTheme(
         headlineLarge: TextStyle(

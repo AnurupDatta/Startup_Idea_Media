@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../screens/main_idea_screen.dart';
 import '../screens/leaderboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,11 +9,13 @@ import '../model/idea_model.dart';
 class HomeScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
-  
+  final String userEmail; // <-- Add this line
+
   const HomeScreen({
     super.key,
     required this.isDarkMode,
     required this.onThemeToggle,
+    this.userEmail = '', // <-- Add default value for backward compatibility
   });
 
   @override
@@ -22,6 +25,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final List<Idea> _ideas = [];
+
+  // Placeholder user info; replace with actual user data as needed
+  final String _userName = "John Doe";
+  // Remove the placeholder email
+  // final String _userEmail = "john.doe@example.com";
 
   @override
   void initState() {
@@ -63,13 +71,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> get _pages => [
     MainIdeaScreen(
-      ideas: _ideas, 
-      onUpvote: _upvoteIdea, 
+      ideas: _ideas,
+      onUpvote: _upvoteIdea,
       onAddIdea: _addIdea,
       isDarkMode: widget.isDarkMode,
     ),
     Leaderboard(
-      ideas: _ideas, 
+      ideas: _ideas,
       onUpvote: _upvoteIdea,
       isDarkMode: widget.isDarkMode,
     ),
@@ -78,27 +86,100 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+              UserAccountsDrawerHeader(
+                accountName: Text(_userName),
+                accountEmail: Text(
+                  widget.userEmail.isNotEmpty ? widget.userEmail : "No email",
+                ),
+                currentAccountPicture: CircleAvatar(
+                  child: Text(
+                    _userName.isNotEmpty ? _userName[0] : '',
+                    style: const TextStyle(fontSize: 32),
+                  ),
+                ),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF6366F1),
+                      Color(0xFF8B5CF6),
+                      Color(0xFFA855F7),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+              // Replace Spacer() with SizedBox for upward spacing
+              const SizedBox(height: 40),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Log Out'),
+                onTap: () async {
+                  final shouldLogout = await showDialog<bool>(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(
+                          title: const Text('Confirm Logout'),
+                          content: const Text(
+                            'Are you sure you want to log out?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF6366F1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text(
+                                'Log Out',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                  );
+                  if (shouldLogout == true) {
+                    Navigator.of(context).pop(); // Close the drawer
+                    await FirebaseAuth.instance.signOut();
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: widget.isDarkMode
-              ? const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF0F172A),
-                    Color(0xFF1E293B),
-                    Color(0xFF334155),
-                  ],
-                )
-              : const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFF8FAFC),
-                    Color(0xFFF1F5F9),
-                    Color(0xFFE2E8F0),
-                  ],
-                ),
+          gradient:
+              widget.isDarkMode
+                  ? const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF0F172A),
+                      Color(0xFF1E293B),
+                      Color(0xFF334155),
+                    ],
+                  )
+                  : const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFF8FAFC),
+                      Color(0xFFF1F5F9),
+                      Color(0xFFE2E8F0),
+                    ],
+                  ),
         ),
         child: _pages[_selectedIndex],
       ),
@@ -118,7 +199,8 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           selectedItemColor: const Color(0xFF6366F1),
-          unselectedItemColor: widget.isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
+          unselectedItemColor:
+              widget.isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
           selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 12,
@@ -156,11 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF6366F1),
-                Color(0xFF8B5CF6),
-                Color(0xFFA855F7),
-              ],
+              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
             ),
           ),
         ),
@@ -171,7 +249,10 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white,
             ),
             onPressed: widget.onThemeToggle,
-            tooltip: widget.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+            tooltip:
+                widget.isDarkMode
+                    ? 'Switch to Light Mode'
+                    : 'Switch to Dark Mode',
           ),
         ],
       ),
