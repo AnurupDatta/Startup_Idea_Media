@@ -8,7 +8,7 @@ A Flutter application for sharing, upvoting, and exploring innovative startup id
 - 👍 Upvote your favorite ideas
 - 🏆 Leaderboard to see top-voted ideas
 - 🌙 Light and dark mode support
-- 💾 Local data persistence (no backend required)
+- 💾 backend : Mongo DB for idea storing (Node.js, Express.js)
 - 📤 Share ideas with others
 
 ## Screenshots
